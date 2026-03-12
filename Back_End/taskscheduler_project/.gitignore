@@ -1,0 +1,30 @@
+# Python virtual environment
+venv/
+env/
+.venv/
+task_env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Node modules (React)
+node_modules/
+
+# Build files
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code Local History
+.history/
