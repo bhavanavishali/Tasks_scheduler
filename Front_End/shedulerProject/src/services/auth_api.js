@@ -23,3 +23,42 @@ export const verifyOTP = async (email, otp) => {
     };
   }
 };
+
+export const loginUser = async (credentials) => {
+  try {
+    const response = await api.post('/login', credentials);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Login failed',
+    };
+  }
+};
+ 
+export const logoutUser = async () => {
+  try {
+    const response = await api.post('/logout');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Logout failed',
+    };
+  }
+};
+
+
+export const getCurrentUser = async () => {
+  try {
+    const response = await api.get('/me');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to get user info',
+    };
+  }
+};
+
+

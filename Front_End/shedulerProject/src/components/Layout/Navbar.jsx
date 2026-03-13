@@ -1,31 +1,73 @@
-import { Link } from "react-router-dom";
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 
-function Navbar() {
+const Navbar = () => {
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  if (loading) {
+    return (
+      <nav className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="text-xl font-bold text-blue-600">TaskScheduler</div>
+            <div className="text-gray-500">Loading...</div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="flex justify-between items-center px-8 py-4 bg-gray-800 text-white shadow-md">
-
-      <h1 className="text-2xl font-bold text-blue-400">
-        TaskScheduler
-      </h1>
-
-      <div className="space-x-4">
-        <Link
-          to="/login"
-          className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
-        >
-          Sign In
-        </Link>
-
-        <Link
-          to="/register"
-          className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600"
-        >
-          Sign Up
-        </Link>
+    <nav className="bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="text-xl font-bold text-blue-600">
+            <Link to="/">TaskScheduler</Link>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {user ? (
+              // Authenticated user - show welcome and logout
+              <>
+                <span className="text-gray-700">
+                  Welcome, {user.first_name}!
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              // Non-authenticated user - show login and signup
+              <>
+                <Link
+                  to="/login"
+                  className="text-blue-600 hover:text-blue-800 px-4 py-2"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-
     </nav>
   );
-}
+};
 
 export default Navbar;

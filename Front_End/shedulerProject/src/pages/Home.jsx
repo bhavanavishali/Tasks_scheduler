@@ -5,7 +5,7 @@ function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
 
-      <Navbar />
+      
 
       <main className="flex flex-1 flex-col items-center justify-center text-center px-6">
 
@@ -25,7 +25,7 @@ function Home() {
 
       </main>
 
-      <Footer />
+      
 
     </div>
   );

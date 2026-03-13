@@ -69,7 +69,7 @@ function Register() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <Navbar />
+      
       <div className="flex flex-1 items-center justify-center">
         <form
           onSubmit={handleSubmit}
@@ -156,7 +156,7 @@ function Register() {
           </p>
         </form>
       </div>
-      <Footer />
+      
     </div>
   );
 }
