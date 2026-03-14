@@ -24,20 +24,25 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const login = async (userData) => {
+    console.log('Login function called with:', userData);
+    setUser(userData);  
+  };
+
   const logout = async () => {
     try {
-      await fetch('http://localhost:8000/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
+      const { logoutUser } = await import('../services/auth_api');
+      await logoutUser();
       setUser(null);
+      console.log('User logged out successfully');
     } catch (error) {
       console.error('Logout failed:', error);
+      setUser(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

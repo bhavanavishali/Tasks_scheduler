@@ -44,7 +44,7 @@ async def login(user_credentials: LoginSchema, response: Response):
         secure=False,  
         samesite="lax"
     )
-    
+    print(f"DEBUG: Set cookie with token: {result['access_token'][:20]}...") 
     return {
         "message": result["message"],
         "user": result["user"],  
@@ -52,9 +52,19 @@ async def login(user_credentials: LoginSchema, response: Response):
     }
 
 @router.post("/logout")
-async def logout(response:Response):
-    response.delete_cookie(key="access_token")
-    return {"message":"Logged out successfully"}
+async def logout(response: Response):
+    try:
+       
+        response.delete_cookie(key="access_token", samesite="lax")
+        
+        print("DEBUG: Cookie deleted successfully")
+        
+        return {"message": "Logged out successfully"}
+    except Exception as e:
+        print(f"DEBUG: Logout error: {str(e)}")
+        
+        response.delete_cookie(key="access_token", samesite="lax")
+        return {"message": "Logged out successfully"}
 
 
 @router.get("/me")

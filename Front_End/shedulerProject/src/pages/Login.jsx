@@ -1,7 +1,9 @@
+
+
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Layout/Navbar";
-import Footer from "../components/Layout/Footer";
+import { Link, useNavigate, Navigate, useLocation } from "react-router-dom";
+import { useAuth } from '../contexts/AuthContext';
 import { loginUser } from "../services/auth_api";
 
 function Login() {
@@ -12,6 +14,14 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, login } = useAuth();  
+
+  const from = location.state?.from?.pathname || '/dashboard';
+  
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -22,17 +32,26 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    console.log('Form submitted with:', formData);
     
+    setIsLoading(true);
+    setErrors({});
+
     try {
       const result = await loginUser(formData);
+      console.log('Login result:', result);
+      
       if (result.success) {
-        navigate("/dashboard"); // Redirect to dashboard or home
+        console.log('Login successful, navigating...');
+        login(result.data.user);  
+        navigate('/dashboard');
       } else {
+        console.log('Login failed:', result.message);
         setErrors({ submit: result.message });
       }
     } catch (error) {
-      setErrors({ submit: "Login failed. Please try again" });
+      console.error('Login error:', error);
+      setErrors({ submit: 'Login failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }

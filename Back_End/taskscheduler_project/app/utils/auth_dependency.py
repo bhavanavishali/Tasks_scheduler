@@ -4,7 +4,7 @@ from ..database.mongo_db import users_collection
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 
 def get_current_user(request: Request):

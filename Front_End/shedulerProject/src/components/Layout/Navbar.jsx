@@ -6,9 +6,19 @@ const Navbar = () => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+const handleLogout = async () => {
+    try {
+      
+      
+      await logout();
+      
+      
+      navigate('/login');
+      
+      console.log('Logout successful');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   if (loading) {
@@ -34,7 +44,7 @@ const Navbar = () => {
           
           <div className="flex items-center space-x-4">
             {user ? (
-              // Authenticated user - show welcome and logout
+              
               <>
                 <span className="text-gray-700">
                   Welcome, {user.first_name}!
@@ -47,7 +57,7 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              // Non-authenticated user - show login and signup
+              
               <>
                 <Link
                   to="/login"

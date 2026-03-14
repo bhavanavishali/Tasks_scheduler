@@ -4,6 +4,7 @@ import Register from "../pages/Register";
 import Login from "../pages/Login"
 import Otpverification from "../components/Comman/Otpverification"
 import Dashboard from "../pages/Dashboard";
+import ProtectedRoute from '../components/ProtectedRoute';
 
 const AppRoutes = () => {
   return (
@@ -12,7 +13,16 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/otp-verification" element={<Otpverification />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      
+      
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
     </Routes>
   );
 };
