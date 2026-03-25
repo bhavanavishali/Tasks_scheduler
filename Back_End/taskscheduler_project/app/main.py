@@ -19,8 +19,17 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # THEN routers
 app.include_router(auth_router)
 app.include_router(task_router, prefix="/api")
+
+@app.get("/")
+async def root():
+    return {"message": "Task Scheduler API", "status": "running"}
+ 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

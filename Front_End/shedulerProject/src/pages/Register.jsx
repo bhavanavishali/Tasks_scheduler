@@ -56,7 +56,7 @@ function Register() {
   confirm_password: formData.confirmPassword 
 });
 
-      if (result.success) {
+       if (result?.status === "success") {
         console.log("REGISTER RESULT:", result);
         navigate("/otp-verification", { state: { email: formData.email } });
       } else {
