@@ -3,10 +3,10 @@ from .routes.auth_route import router as auth_router
 import os
 from .routes.task_route import router as task_router
 from fastapi.middleware.cors import CORSMiddleware
+
 app=FastAPI()
  
-app.include_router(auth_router)
-app.include_router(task_router, prefix="/api") 
+
 
 origins = [
     "http://localhost:5173",
@@ -20,3 +20,5 @@ app.add_middleware(
     allow_methods=["POST", "GET", "PUT", "DELETE", "OPTIONS","PATCH"],
     allow_headers=["*"],
 )
+app.include_router(auth_router)
+app.include_router(task_router, prefix="/api") 
