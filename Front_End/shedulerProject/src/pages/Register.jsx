@@ -59,7 +59,7 @@ console.log("FULL RESULT:", result);
 console.log("STATUS:", result.status);
 console.log("MESSAGE:", result.message);
 
-       if (result?.status === "success") {
+       if (result.success){
         console.log("REGISTER RESULT:", result.data);
         navigate("/otp-verification", { state: { email: formData.email } });
       } else {

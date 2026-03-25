@@ -2,23 +2,13 @@ import api from "./api";
 
 export const registerUser = async (userData) => {
   try {
-    const response = await api.post('/register', userData);
-    // Check backend's status field
-    if (response.data.status === "success") {
-      return { success: true, data: response.data };
-    } else {
-      return {
-        success: false,
-        message: response.data.message || 'Registration failed',
-      };
-    }
+    const response = await api.post("/register", userData);
+    return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.detail || error.response?.data?.message || 'Registration failed',
-    };
+    throw error;
   }
 };
+
 export const verifyOTP = async (email, otp) => {
   try {
     const response = await api.post('/verify-otp', { email, otp });
