@@ -9,7 +9,7 @@ async def create_task(task_data: TaskCreate, user_email: str):
         task = {
             "title": task_data.title,
             "description": task_data.description,
-            "creation_datetime": task_data.creation_datetime,
+            "creation_datetime": datetime.now(timezone.utc),
             "due_date": task_data.due_date,
             "is_completed": task_data.is_completed,
             "user_email": user_email,

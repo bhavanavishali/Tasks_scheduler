@@ -118,3 +118,67 @@ async def login_user(email: str, password: str):
         
     except Exception as e:
         return {"message": f"login failed: {str(e)}", "status": "error"}
+
+
+
+async def request_login_otp(email: str):
+    try:
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return {"message": "User not found", "status": "error"}
+        
+        otp = generate_otp()
+        
+        redis_client.setex(
+            f"login_otp:{email}",
+            300,  # 5 minutes expiry
+            otp
+        )
+        
+        await send_otp_email(email, otp)
+        
+        return {
+            "message": "OTP sent to your email",
+            "status": "success",
+            "email": email
+        }
+        
+    except Exception as e:
+        return {"message": f"Failed to send OTP: {str(e)}", "status": "error"}
+
+
+async def verify_login_otp(email: str, otp: str):
+    try:
+        stored_otp = redis_client.get(f"login_otp:{email}")
+        
+        if not stored_otp:
+            return {"message": "OTP expired or not found", "status": "error"}
+        
+        if stored_otp != otp:
+            return {"message": "Invalid OTP", "status": "error"}
+        
+        user = users_collection.find_one({"email": email})
+        if not user:
+            return {"message": "User not found", "status": "error"}
+        
+        access_token_expires = timedelta(minutes=30)
+        access_token = create_access_token(
+            data={"sub": user["email"]}, expires_delta=access_token_expires
+        )
+        
+        redis_client.delete(f"login_otp:{email}")
+        
+        return {
+            "message": "Login successful",
+            "status": "success",
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "first_name": user["first_name"],
+                "last_name": user["last_name"],
+                "email": user["email"]
+            }
+        }
+        
+    except Exception as e:
+        return {"message": f"OTP verification failed: {str(e)}", "status": "error"}

@@ -11,10 +11,13 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const result = await getCurrentUser();
-        if (result.success) {
+        if (result.success && result.data && typeof result.data !== 'string' && typeof result.data === 'object') {
           setUser(result.data);
+        } else {
+          setUser(null);
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -22,6 +25,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);  // Force stop loading after 3 seconds
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   const login = async (userData) => {
@@ -41,11 +51,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+ return (
+  <AuthContext.Provider value={{ user, loading, login, logout }}>
+    {children}
+  </AuthContext.Provider>
+);
 };
 
 export const useAuth = () => useContext(AuthContext);

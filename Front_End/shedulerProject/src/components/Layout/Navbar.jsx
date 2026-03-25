@@ -1,20 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 
 const Navbar = () => {
   const { user, loading, logout } = useAuth();
+  console.log('Navbar - user:', user);
   const navigate = useNavigate();
 
-const handleLogout = async () => {
+  useEffect(() => {
+  console.log('Navbar user changed:', user);  // Should log when user updates
+}, [user]); 
+
+  const handleLogout = async () => {
     try {
-      
-      
       await logout();
-      
-      
       navigate('/login');
-      
       console.log('Logout successful');
     } catch (error) {
       console.error('Logout error:', error);
@@ -44,7 +44,7 @@ const handleLogout = async () => {
           
           <div className="flex items-center space-x-4">
             {user ? (
-              
+              // ✅ When user IS logged in - show welcome and logout
               <>
                 <span className="text-gray-700">
                   Welcome, {user.first_name}!
@@ -57,7 +57,7 @@ const handleLogout = async () => {
                 </button>
               </>
             ) : (
-              
+              // ✅ When user IS NOT logged in - show login and signup
               <>
                 <Link
                   to="/login"

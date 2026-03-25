@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState } from 'react';
 import TaskForm from './TaskForm';
 import { updateTask, deleteTask } from '../../services/task_api';
@@ -26,7 +23,7 @@ const TaskList = ({ tasks, onTaskUpdate, onTaskDelete }) => {
     if (result.isConfirmed) {
       const deleteResult = await deleteTask(taskId);
       if (deleteResult.success) {
-        // Show success message
+      
         await Swal.fire({
           icon: 'success',
           title: 'Deleted!',

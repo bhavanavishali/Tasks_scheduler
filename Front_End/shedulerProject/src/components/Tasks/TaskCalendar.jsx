@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
 
-const TaskCalendar = ({ tasks }) => {
+
+
+
+import React, { useState } from 'react';
+import TaskDetailModal from './TaskDetailModal';
+
+const TaskCalendar = ({ tasks, onTaskUpdate, onTaskDelete, onTaskEdit }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -17,6 +24,16 @@ const TaskCalendar = ({ tasks }) => {
       const calendarDate = date.toDateString();
       return taskDate === calendarDate;
     });
+  };
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedTask(null);
   };
 
   const renderCalendar = () => {
@@ -57,17 +74,27 @@ const TaskCalendar = ({ tasks }) => {
             {dayTasks.slice(0, 2).map(task => (
               <div
                 key={task.id}
-                className={`text-xs p-1 rounded truncate ${
+                onClick={() => handleTaskClick(task)}
+                className={`text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 transition-opacity ${
                   task.is_completed 
                     ? 'bg-green-100 text-green-800' 
                     : 'bg-blue-100 text-blue-800'
                 }`}
+                title={task.title}
               >
                 {task.title}
               </div>
             ))}
             {dayTasks.length > 2 && (
-              <div className="text-xs text-gray-500">+{dayTasks.length - 2} more</div>
+              <div 
+                className="text-xs text-gray-500 cursor-pointer hover:text-gray-700"
+                onClick={() => {
+                  // Show first task from remaining tasks
+                  handleTaskClick(dayTasks[2]);
+                }}
+              >
+                +{dayTasks.length - 2} more
+              </div>
             )}
           </div>
         </div>
@@ -90,31 +117,42 @@ const TaskCalendar = ({ tasks }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-        </h2>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => navigateMonth('prev')}
-            className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
-          >
-            ←
-          </button>
-          <button
-            onClick={() => navigateMonth('next')}
-            className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
-          >
-            →
-          </button>
+    <>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => navigateMonth('prev')}
+              className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => navigateMonth('next')}
+              className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded"
+            >
+              →
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-7 gap-1">
+          {renderCalendar()}
         </div>
       </div>
-      
-      <div className="grid grid-cols-7 gap-1">
-        {renderCalendar()}
-      </div>
-    </div>
+
+      {showModal && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={handleCloseModal}
+          onEdit={onTaskEdit}
+          onDelete={onTaskDelete}
+        />
+      )}
+    </>
   );
 };
 

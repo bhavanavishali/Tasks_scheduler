@@ -1,6 +1,7 @@
 # IDE files
 .vscode/
 .idea/
+.env.development
 
 # OS files
 .DS_Store

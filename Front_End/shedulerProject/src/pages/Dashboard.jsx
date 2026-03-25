@@ -1,17 +1,17 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import TaskList from "../components/Tasks/TaskList";
 import TaskCalendar from "../components/Tasks/TaskCalendar";
-import { getTasks } from "../services/task_api";
+import TaskForm from "../components/Tasks/TaskForm";
+import { getTasks, deleteTask } from "../services/task_api";
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('list'); 
+  const [view, setView] = useState('list');
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
 
   useEffect(() => {
     loadTasks();
@@ -34,8 +34,21 @@ const Dashboard = () => {
     loadTasks();
   };
 
-  const handleTaskDelete = (taskId) => {
-    setTasks(prev => prev.filter(task => task.id !== taskId));
+  const handleTaskDelete = async (taskId) => {
+    const result = await deleteTask(taskId);
+    if (result.success) {
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    }
+  };
+
+  const handleTaskEdit = (task) => {
+    setEditingTask(task);
+    setShowTaskForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowTaskForm(false);
+    setEditingTask(null);
   };
 
   const stats = {
@@ -151,7 +164,21 @@ const Dashboard = () => {
           onTaskDelete={handleTaskDelete}
         />
       ) : (
-        <TaskCalendar tasks={tasks} />
+        <TaskCalendar 
+          tasks={tasks}
+          onTaskUpdate={handleTaskUpdate}
+          onTaskDelete={handleTaskDelete}
+          onTaskEdit={handleTaskEdit}
+        />
+      )}
+
+      {/* Task Form Modal */}
+      {showTaskForm && (
+        <TaskForm
+          task={editingTask}
+          onClose={handleCloseForm}
+          onSuccess={handleTaskUpdate}
+        />
       )}
     </div>
   );

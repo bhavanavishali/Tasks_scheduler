@@ -2,7 +2,7 @@ import api from "./api";
 
 export const createTask = async (taskData) => {
   try {
-    const response = await api.post('/api/tasks', taskData);
+    const response = await api.post('/api/tasks/', taskData);
     return { success: true, data: response.data };
   } catch (error) {
     return {
