@@ -76,6 +76,7 @@ async def logout(response: Response):
 @router.get("/me")
 async def get_current_user_endpoint(current_user=Depends(get_current_user)):
     return {
+          "status": "success", 
         "email": current_user["email"],
         "first_name": current_user["first_name"],
         "last_name": current_user["last_name"]
