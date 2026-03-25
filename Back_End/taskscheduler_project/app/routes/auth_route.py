@@ -45,11 +45,12 @@ async def login(user_credentials: LoginSchema, response: Response):
         value=result["access_token"],
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         httponly=True,
-        secure=False,  
-        samesite="lax"
+        secure=True,  
+        samesite="none"
     )
     print(f"DEBUG: Set cookie with token: {result['access_token'][:20]}...") 
     return {
+        "status": "success", 
         "message": result["message"],
         "user": result["user"],  
         "token": result["access_token"]  
@@ -67,7 +68,8 @@ async def logout(response: Response):
     except Exception as e:
         print(f"DEBUG: Logout error: {str(e)}")
         
-        response.delete_cookie(key="access_token", samesite="lax")
+        # response.delete_cookie(key="access_token", samesite="lax")
+        response.delete_cookie(key="access_token", samesite="none", secure=True)
         return {"message": "Logged out successfully"}
 
 
@@ -102,8 +104,8 @@ async def verify_login_otp_route(otp_data: OTPVerify, response: Response):
         value=result["access_token"],
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         httponly=True,
-        secure=False,
-        samesite="lax"
+        secure=True,
+        samesite="none"
     )
     
     return {
