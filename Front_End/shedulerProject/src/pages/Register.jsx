@@ -49,11 +49,12 @@ function Register() {
     
     try {
       const result = await registerUser({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        password: formData.password
-      });
+  first_name: formData.firstName,
+  last_name: formData.lastName,
+  email: formData.email,
+  password: formData.password,
+  confirm_password: formData.confirmPassword  // Add this line
+});
 
       if (result.success) {
         navigate("/otp-verification", { state: { email: formData.email } });
