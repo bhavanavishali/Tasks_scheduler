@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .routes.auth_route import router as auth_router
-
+import os
 from .routes.task_route import router as task_router
 from fastapi.middleware.cors import CORSMiddleware
 app=FastAPI()
@@ -8,9 +8,14 @@ app=FastAPI()
 app.include_router(auth_router)
 app.include_router(task_router, prefix="/api") 
 
+origins = [
+    "http://localhost:5173",
+    "https://tasks-scheduler-cyan.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["POST", "GET", "PUT", "DELETE", "OPTIONS","PATCH"],
     allow_headers=["*"],
