@@ -14,7 +14,7 @@ export const createTask = async (taskData) => {
 
 export const getTasks = async () => {
   try {
-    const response = await api.get('/api/tasks');
+    const response = await api.get('/api/tasks/');
     return { success: true, data: response.data };
   } catch (error) {
     return {
