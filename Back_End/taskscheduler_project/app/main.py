@@ -7,20 +7,20 @@ from .routes.task_route import router as task_router
 
 app = FastAPI()
 
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:5173"
-).split(",")
-
-print("CORS origins:", allowed_origins)
+# CORS FIRST
+origins = [
+    "http://localhost:5173",
+    "https://tasks-scheduler-cyan.vercel.app",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# THEN routers
 app.include_router(auth_router)
 app.include_router(task_router, prefix="/api")
