@@ -53,16 +53,18 @@ function Register() {
   last_name: formData.lastName,
   email: formData.email,
   password: formData.password,
-  confirm_password: formData.confirmPassword  // Add this line
+  confirm_password: formData.confirmPassword 
 });
 
       if (result.success) {
+        console.log("REGISTER RESULT:", result);
         navigate("/otp-verification", { state: { email: formData.email } });
       } else {
         setErrors({ submit: result.message });
       }   
     } catch (error) {
-      setErrors({ submit: "Registration failed. Please try again" });
+      console.log(error.response);
+      setErrors({ submit: error.response?.data?.detail || "Registration failed" });
     } finally {
       setIsLoading(false);
     }
