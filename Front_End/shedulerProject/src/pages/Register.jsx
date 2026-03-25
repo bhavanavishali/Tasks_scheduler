@@ -55,9 +55,12 @@ function Register() {
   password: formData.password,
   confirm_password: formData.confirmPassword 
 });
+console.log("FULL RESULT:", result);
+console.log("STATUS:", result.status);
+console.log("MESSAGE:", result.message);
 
        if (result?.status === "success") {
-        console.log("REGISTER RESULT:", result);
+        console.log("REGISTER RESULT:", result.data);
         navigate("/otp-verification", { state: { email: formData.email } });
       } else {
         setErrors({ submit: result.message });
