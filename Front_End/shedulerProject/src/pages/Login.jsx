@@ -21,6 +21,9 @@ function Login() {
   const location = useLocation();
   const { user, login } = useAuth();
   
+  const [resendTimer, setResendTimer] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [otpExpiresIn, setOtpExpiresIn] = useState(0);
   const from = location.state?.from?.pathname || '/dashboard';
   
   if (user) {
@@ -56,27 +59,77 @@ function Login() {
     }
   };
 
-  const handleRequestOTP = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors({});
+  // const handleRequestOTP = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   setErrors({});
 
-    try {
-      const result = await requestLoginOTP(formData.email);
+  //   try {
+  //     const result = await requestLoginOTP(formData.email);
       
-      if (result.success) {
-        setLoginStep('verify-otp');
-        setErrors({ submit: result.data.message || 'OTP sent to your email' });
-      } else {
-        setErrors({ submit: result.message });
-      }
-    } catch (error) {
-      console.error('OTP request error:', error);
-      setErrors({ submit: 'Failed to send OTP. Please try again.' });
-    } finally {
-      setIsLoading(false);
+  //     if (result.success) {
+  //       setLoginStep('verify-otp');
+  //       setErrors({ submit: result.data.message || 'OTP sent to your email' });
+  //     } else {
+  //       setErrors({ submit: result.message });
+  //     }
+  //   } catch (error) {
+  //     console.error('OTP request error:', error);
+  //     setErrors({ submit: 'Failed to send OTP. Please try again.' });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+  const handleRequestOTP = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setErrors({});
+ 
+  try {
+    const result = await requestLoginOTP(formData.email);
+    
+    if (result.success) {
+      setLoginStep('verify-otp');
+      setErrors({ submit: result.data.message || 'OTP sent to your email' });
+      
+      // Set 5-minute expiration timer (300 seconds)
+      setOtpExpiresIn(300);
+      setResendTimer(60); // Resend cooldown
+      
+      // Start expiration countdown
+      const expireTimer = setInterval(() => {
+        setOtpExpiresIn((prev) => {
+          if (prev <= 1) {
+            clearInterval(expireTimer);
+            setErrors({ submit: 'OTP expired. Please request a new one.' });
+            setLoginStep('initial');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      // Start resend cooldown
+      const resendCooldown = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(resendCooldown);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+    } else {
+      setErrors({ submit: result.message });
     }
-  };
+  } catch (error) {
+    console.error('OTP request error:', error);
+    setErrors({ submit: 'Failed to send OTP. Please try again.' });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -99,6 +152,53 @@ function Login() {
       setIsLoading(false);
     }
   };
+const handleResendOTP = async () => {
+  setResendLoading(true);
+  setErrors({});
+  
+  try {
+    const result = await requestLoginOTP(formData.email);
+    if (result.success) {
+      setErrors({ submit: 'OTP resent successfully!' });
+      
+      // Reset timers
+      setOtpExpiresIn(300);
+      setResendTimer(60);
+      
+      // Start new expiration timer
+      const expireTimer = setInterval(() => {
+        setOtpExpiresIn((prev) => {
+          if (prev <= 1) {
+            clearInterval(expireTimer);
+            setErrors({ submit: 'OTP expired. Please request a new one.' });
+            setLoginStep('initial');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      // Start new resend cooldown
+      const resendCooldown = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(resendCooldown);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+    } else {
+      setErrors({ submit: result.message || 'Failed to resend OTP' });
+    }
+  } catch (error) {
+    console.error('Resend OTP error:', error);
+    setErrors({ submit: 'Failed to resend OTP. Please try again.' });
+  } finally {
+    setResendLoading(false);
+  }
+};
 
   const switchAuthMethod = (method) => {
     setAuthMethod(method);
@@ -205,7 +305,7 @@ function Login() {
                 </form>
               )}
 
-              {loginStep === 'verify-otp' && (
+              {/* {loginStep === 'verify-otp' && (
                 <form onSubmit={handleVerifyOTP}>
                   <input
                     type="email"
@@ -245,7 +345,65 @@ function Login() {
                     Back
                   </button>
                 </form>
-              )}
+              )} */}
+
+{loginStep === 'verify-otp' && (
+  <form onSubmit={handleVerifyOTP}>
+    <input
+      type="email"
+      name="email"
+      placeholder="Email"
+      value={formData.email}
+      onChange={handleChange}
+      className="w-full p-3 mb-4 rounded bg-gray-700 border border-gray-600 focus:outline-none"
+      disabled
+    />
+    
+    <input
+      type="text"
+      name="otp"
+      placeholder="Enter OTP"
+      value={formData.otp}
+      onChange={handleChange}
+      className="w-full p-3 mb-4 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
+      maxLength="6"
+      required
+      autoFocus
+    />
+    
+    <button
+      type="submit"
+      disabled={isLoading}
+      className="w-full bg-blue-500 p-3 rounded hover:bg-blue-600 disabled:opacity-50 mb-4 transition-colors"
+    >
+      {isLoading ? "Verifying..." : "Verify OTP"}
+    </button>
+    
+    {/* Timer Display */}
+    {resendTimer > 0 && (
+      <div className="text-center mb-4">
+        <p className="text-yellow-400 text-sm">
+          OTP expires in <span className="font-bold">{resendTimer}</span> seconds
+        </p>
+      </div>
+    )}
+    
+    {/* Resend OTP Button */}
+    <button
+      type="button"
+      onClick={handleResendOTP}
+      disabled={resendLoading || resendTimer > 0}
+      className="w-full bg-green-600 p-3 rounded hover:bg-green-700 disabled:opacity-50 transition-colors"
+    >
+      {resendLoading 
+        ? "Sending..." 
+        : resendTimer > 0 
+          ? `Resend OTP in ${resendTimer}s` 
+          : "Resend OTP"
+      }
+    </button>
+  </form>
+)}
             </>
           )}
           
