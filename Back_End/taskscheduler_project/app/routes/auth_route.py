@@ -110,6 +110,7 @@ async def verify_login_otp_route(otp_data: OTPVerify, response: Response):
     )
     
     return {
+        "status": "success",
         "message": result["message"],
         "user": result["user"],
         "token": result["access_token"]
