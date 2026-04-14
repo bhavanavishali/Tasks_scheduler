@@ -1,0 +1,59 @@
+# 📝 Task Scheduler App
+
+## 📌 Objective
+
+This web app allows users to:
+
+* Create, view, edit, and delete tasks
+* Schedule tasks
+* View tasks on dashboard and calendar
+
+---
+
+## 🚀 Features
+
+* Login with Email & Password
+* Login using Email OTP
+* Add / Edit / Delete tasks
+* Mark tasks as completed
+* View tasks in calendar
+* Clean and simple UI
+
+---
+
+## 🛠️ Tech Stack
+
+* Frontend:React
+* Backend: Python  FastAPI
+* Database: MongoDB
+* API: REST API
+* Version Control: Git
+* Deployment: AWS
+
+---
+
+## 🔗 API (Sample)
+
+* `POST /register`
+* `POST /login`
+* `POST /otp`
+* `GET /tasks`
+* `POST /tasks`
+* `PUT /tasks/{id}`
+* `DELETE /tasks/{id}`
+
+---
+
+
+---
+
+## ☁️ Deployment
+
+* Hosted on AWS (EC2)
+* MongoDB Atlas for database
+
+---
+
+## 👩‍💻 Author
+
+Bhavana Vishali
