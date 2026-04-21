@@ -8,43 +8,64 @@ const TaskList = ({ tasks, onTaskUpdate, onTaskDelete }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const handleDelete = async (taskId) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel'
-    });
+  // const handleDelete = async (taskId) => {
+  //   const result = await Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: "You won't be able to revert this!",
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Yes, delete it!',
+  //     cancelButtonText: 'Cancel'
+  //   });
 
-    if (result.isConfirmed) {
-      const deleteResult = await deleteTask(taskId);
-      if (deleteResult.success) {
+  //   if (result.isConfirmed) {
+  //     const deleteResult = await deleteTask(taskId);
+  //     if (deleteResult.success) {
       
-        await Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          text: 'Task has been deleted.',
-          showConfirmButton: false,
-          timer: 1500
-        });
+  //       await Swal.fire({
+  //         icon: 'success',
+  //         title: 'Deleted!',
+  //         text: 'Task has been deleted.',
+  //         showConfirmButton: false,
+  //         timer: 1500
+  //       });
         
-        onTaskDelete(taskId);
-      } else {
-        // Show error message
-        await Swal.fire({
-          icon: 'error',
-          title: 'Error!',
-          text: deleteResult.message || 'Failed to delete task',
-          confirmButtonText: 'OK'
-        });
-      }
-    }
-  };
+  //       onTaskDelete(taskId);
+  //     } else {
+  //       // Show error message
+  //       await Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error!',
+  //         text: deleteResult.message || 'Failed to delete task',
+  //         confirmButtonText: 'OK'
+  //       });
+  //     }
+  //   }
+  // };
+const handleDelete = async (taskId) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!'
+  });
 
+  if (result.isConfirmed) {
+    // 🔥 call parent
+    await onTaskDelete(taskId);
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Deleted!',
+      text: 'Task has been deleted.',
+      timer: 1500,
+      showConfirmButton: false
+    });
+  }
+};
   const handleToggleComplete = async (task) => {
     const result = await updateTask(task.id, { is_completed: !task.is_completed });
     

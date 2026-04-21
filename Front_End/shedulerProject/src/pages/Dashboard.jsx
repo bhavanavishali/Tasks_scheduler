@@ -34,12 +34,23 @@ const Dashboard = () => {
     loadTasks();
   };
 
+  // const handleTaskDelete = async (taskId) => {
+  //   const result = await deleteTask(taskId);
+  //   if (result.success) {
+  //      await loadTasks(); 
+      
+  //     setTasks(prev => prev.filter(task => task.id !== taskId));
+  //   }
+  // };
+
+
   const handleTaskDelete = async (taskId) => {
-    const result = await deleteTask(taskId);
-    if (result.success) {
-      setTasks(prev => prev.filter(task => task.id !== taskId));
-    }
-  };
+  const result = await deleteTask(taskId);
+
+  if (result.success) {
+    await loadTasks();   // 🔥 reload from backend
+  }
+};
 
   const handleTaskEdit = (task) => {
     setEditingTask(task);

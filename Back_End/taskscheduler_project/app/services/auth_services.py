@@ -7,46 +7,96 @@ from app.utils.hashing import hash_password,verify_password
 from app.utils.jwt_handler import create_access_token
 
 from datetime import timedelta
+import re
+import json
+
+def is_valid_name(name):
+    return bool(re.fullmatch(r"[A-Za-z ]+", name.strip()))
 
 async def register_user(user):
     try:
-        
-        existing_user = users_collection.find_one({"email": user.email})
+        # 🔹 Normalize email
+        email = user.email.strip().lower()
+
+        # 🔹 Validate email
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, email):
+            return {"message": "Invalid email format", "status": "error"}
+
+        # 🔹 Validate first name
+        first_name = user.first_name.strip()
+        if not is_valid_name(first_name):
+            return {
+                "message": "First name must contain only letters",
+                "status": "error"
+            }
+
+        # 🔹 Validate last name
+        last_name = user.last_name.strip()
+        if not is_valid_name(last_name):
+            return {
+                "message": "Last name must contain only letters",
+                "status": "error"
+            }
+
+        # 🔹 Validate password
+        password = user.password.strip()
+
+        if len(password) < 8:
+            return {
+                "message": "Password must be at least 8 characters",
+                "status": "error"
+            }
+
+        # 🔹 Check existing user
+        existing_user = users_collection.find_one({"email": email})
         if existing_user:
-            return {"message": "User with this email already exists", "status": "error"}
-        
-        
+            return {"message": "User already exists", "status": "error"}
+
+        # 🔹 OTP rate limit
+        if redis_client.get(f"register:{email}"):
+            return {
+                "message": "OTP already sent. Please wait before retrying",
+                "status": "error"
+            }
+
+        # 🔹 Generate OTP
         otp = generate_otp()
-        
-        
+
+        # 🔹 Prepare user data
         user_data = user.dict()
-        user_data["password"] = hash_password(user_data["password"])
-        
-        
+        user_data["email"] = email
+        user_data["first_name"] = first_name
+        user_data["last_name"] = last_name
+        user_data["password"] = hash_password(password)
+
+        # 🔹 Store in Redis
         redis_client.setex(
-            f"register:{user.email}",
+            f"register:{email}",
             300,
             json.dumps(user_data)
         )
-        
-        
+
         redis_client.setex(
-            f"otp:{user.email}",
-            360,
+            f"otp:{email}",
+            300,
             otp
         )
-        
-    
-        await send_otp_email(user.email, otp)
-        
+
+        # 🔹 Send OTP
+        await send_otp_email(email, otp)
+
         return {
-            "message": "Registration initiated. Please check your email for OTP.",
+            "message": "Registration initiated. Check your email for OTP",
             "status": "success",
-            "email": user.email
+            "email": email
         }
-        
+
     except Exception as e:
-        return {"message": f"Registration failed: {str(e)}", "status": "error"}
+        return {
+            "message": f"Registration failed: {str(e)}",
+            "status": "error"
+        }
 
 async def verify_otp(email: str, otp: str):
     try:

@@ -305,47 +305,7 @@ const handleResendOTP = async () => {
                 </form>
               )}
 
-              {/* {loginStep === 'verify-otp' && (
-                <form onSubmit={handleVerifyOTP}>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full p-3 mb-4 rounded bg-gray-700 border border-gray-600 focus:outline-none"
-                    disabled
-                  />
-                  
-                  <input
-                    type="text"
-                    name="otp"
-                    placeholder="Enter OTP"
-                    value={formData.otp}
-                    onChange={handleChange}
-                    className="w-full p-3 mb-4 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
-                    maxLength="6"
-                    required
-                    autoFocus
-                  />
-                  
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-blue-500 p-3 rounded hover:bg-blue-600 disabled:opacity-50 mb-2 transition-colors"
-                  >
-                    {isLoading ? "Verifying..." : "Verify OTP"}
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setLoginStep('initial')}
-                    className="w-full bg-gray-600 p-3 rounded hover:bg-gray-700 transition-colors"
-                  >
-                    Back
-                  </button>
-                </form>
-              )} */}
+              
 
 {loginStep === 'verify-otp' && (
   <form onSubmit={handleVerifyOTP}>

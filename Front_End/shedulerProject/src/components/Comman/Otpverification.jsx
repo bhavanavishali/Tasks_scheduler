@@ -36,7 +36,7 @@ function OtpVerification() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      <Navbar />
+      
       <div className="flex flex-1 items-center justify-center">
         <form onSubmit={handleVerify} className="bg-gray-800 p-8 rounded-xl shadow-lg w-96">
           <h2 className="text-3xl font-bold text-center mb-6">Verify OTP</h2>
